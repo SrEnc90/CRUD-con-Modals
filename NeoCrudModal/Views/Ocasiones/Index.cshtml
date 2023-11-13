@@ -1,0 +1,92 @@
+﻿@model IEnumerable<NeoCrudModal.Entidades.Ocasione>
+
+@{
+    ViewData["Title"] = "Ocasiones";
+}
+
+<div class="container">
+    
+    <div class="row">
+        <div class="col s6">
+            <h3>Ocasiones</h3>
+        </div>
+        <div class="col s6 valign-wrapper offset-s10">
+            <p><i class="fa-solid fa-plus fa-2xl"></i> Agregar</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <table class="responsive-table highlight centered">
+            <thead class="light-blue accent-2 white-text">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Ocasion)
+                    </th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Ocasion)
+                        </td>
+                        <td>
+                            <i class="fa-solid fa-pen-to-square fa-xl" onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'"></i>
+                            <i class="fa-solid fa-trash-can fa-xl" onclick="Delete('Ocasión','@item.Ocasion');" onmouseover="this.style.color='red'" onmouseout="this.style.color='black'"></i>
+                            @* <i class="material-icons" onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'">edit</i>
+                            <i class="material-icons" onmouseover="this.style.color='red'" onmouseout="this.style.color='black'">delete_forever</i> *@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    
+
+</div>
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+
+<!-- Modal Trigger -->
+<a class="waves-effect waves-light btn modal-trigger" href="#deleteModal">Modal</a>
+
+<!-- Modal Structure -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h4 id="deleteTitle">Modal Header</h4>
+        <p id="deleteMessage">A bunch of text</p>
+    <p><small>Esta acción no se puede deshacer.</small></p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn red">Eliminar</a>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+        
+        const Delete = (entity, element) => {
+            event.stopPropagation();
+            document.getElementById('deleteTitle').innerHTML = `Eliminar ${entity}`;
+            document.getElementById('deleteMessage').innerHTML = `Seguro de eliminar el registro`;
+
+            let elem = document.getElementById('deleteModal');
+            let instance = M.Modal.init(elem, { dismissible: false });
+            instance.open();
+        }
+    
+    </script>
+
+}

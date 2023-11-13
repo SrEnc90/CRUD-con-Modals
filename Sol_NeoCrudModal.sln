@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoCrudModal", "NeoCrudModal\NeoCrudModal.csproj", "{05CB0EDE-BDB6-44B2-BDF3-4F40BB6F5448}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{05CB0EDE-BDB6-44B2-BDF3-4F40BB6F5448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05CB0EDE-BDB6-44B2-BDF3-4F40BB6F5448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05CB0EDE-BDB6-44B2-BDF3-4F40BB6F5448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05CB0EDE-BDB6-44B2-BDF3-4F40BB6F5448}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3B656D10-952D-4567-9316-5B130BF6E298}
+	EndGlobalSection
+EndGlobal

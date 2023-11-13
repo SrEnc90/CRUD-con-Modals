@@ -1,0 +1,17 @@
+
+
+/******************CODIGO PARA REALIZAR DATABASE FIRST*******************/
+Scaffold-DbContext "Server=.;Database=PuntoVenta;User Id=sa;Password=sql;TrustServerCertificate=True;" 
+Microsoft.EntityFrameworkCore.SqlServer -Tables Clientes,Pedidos -IgnoreTables TablaNoDeseada1,TablaNoDeseada2 -OutputDir Entidades 
+-ContextDir Context -Context ApplicationDBContext -Force -NoOnConfiguring
+
+
+El Tables Clientes,Pedidos le indica que tablas queremos hacer migración
+El -IgnoreTables TablaNoDeseada1,TablaNoDeseada2 indica que tablas no queremos que migren como clases en net core (Según chatgpt pero creo que no existe este código)
+El -OutputDir Entidades indica la carpeta dónde se va a guardar las entidades que se generarán a partir de las tablas
+El -ContextDir Context indica la carpeta dónde se va a guardar nuestro contexto(en nuestro caso lo hemos llamado ApplicationDBContext)
+El -Context ApplicationDBContext indica el nombre de nuestro contexto
+El -Force indica que cada vez que corramos el código se van a volver a generar las clases(se van a sobreescribir las clases ya creadas)
+El NoOnConfiguring Es para que no aparezca la conexión hardcodeado en el aplicationDBContext
+
+

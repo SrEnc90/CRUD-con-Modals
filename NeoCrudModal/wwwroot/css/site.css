@@ -1,0 +1,33 @@
+/*Estilos para el sidenav de Materialize*/
+header, main, footer {
+    padding-left: 300px;
+}
+
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+        padding-left: 0;
+    }
+}
+
+/*Estilos para el footer de Materialize*/
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.material-icons:hover {
+    transform: translateY(-0.5rem);
+    transition: 0.4s ease;
+}
+
+i.fa-solid:hover {
+    transform: translateY(-0.5rem);
+    transition: 0.4s ease;
+    cursor: pointer;
+}
+          
