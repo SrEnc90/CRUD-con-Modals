@@ -10,8 +10,8 @@
         <div class="col s6">
             <h3>Ocasiones</h3>
         </div>
-        <div class="col s6 valign-wrapper offset-s10">
-            <p><i class="fa-solid fa-plus fa-2xl"></i> Agregar</p>
+        <div class="col s6 valign-wrapper offset-s10" onclick="Attach('Ocasión', '');">
+            <a href="#"><i class="fa-solid fa-plus fa-2xl"></i> Agregar</a>
         </div>
 
     </div>
@@ -27,16 +27,16 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tblBody">
                 @foreach (var item in Model)
                 {
-                    <tr>
+                    <tr id="row_@item.Id">
                         <td>
                             @Html.DisplayFor(modelItem => item.Ocasion)
                         </td>
                         <td>
-                            <i class="fa-solid fa-pen-to-square fa-xl" onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'"></i>
-                            <i class="fa-solid fa-trash-can fa-xl" onclick="Delete('Ocasión','@item.Ocasion');" onmouseover="this.style.color='red'" onmouseout="this.style.color='black'"></i>
+                            <i class="fa-solid fa-pen-to-square fa-xl" onclick="Attach('Ocasión', @item.Id);" onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'"></i>
+                            <i class="fa-solid fa-trash-can fa-xl" onclick="Delete('Ocasión','@item.Ocasion', @item.Id);" onmouseover="this.style.color='red'" onmouseout="this.style.color='black'" title="Eliminar"></i>
                             @* <i class="material-icons" onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'">edit</i>
                             <i class="material-icons" onmouseover="this.style.color='red'" onmouseout="this.style.color='black'">delete_forever</i> *@
                         </td>
@@ -47,18 +47,7 @@
 
     </div>
 
-    
-
 </div>
-
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-
-<!-- Modal Trigger -->
-<a class="waves-effect waves-light btn modal-trigger" href="#deleteModal">Modal</a>
 
 <!-- Modal Structure -->
 <div id="deleteModal" class="modal">
@@ -69,22 +58,140 @@
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn red">Eliminar</a>
+        <a href="#!" id="cmdDelete" class="modal-close waves-effect waves-red btn red">Eliminar</a>
+    </div>
+</div>
+
+<!-- Modal Structure Attach-->
+<div id="attachModal" class="modal">
+    <div class="modal-content">
+        <h4 id="attachTitle">Modal Header</h4>
+        <div id="attachBody"></div>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        <a href="#!" id="cmdSave" class="waves-effect waves-green btn">Guardar</a>
     </div>
 </div>
 
 @section Scripts {
 
     <script type="text/javascript">
-        
-        const Delete = (entity, element) => {
+        let idDelete;
+
+        document.getElementById('cmdDelete').addEventListener('click', () => {
+            ConfirmDelete();
+        })
+
+        document.getElementById('cmdSave').addEventListener('click', () => {
+            ConfirmAttach();
+        })
+
+        const Delete = (entity, element, id) => {
             event.stopPropagation();
+
+            idDelete = id;
             document.getElementById('deleteTitle').innerHTML = `Eliminar ${entity}`;
             document.getElementById('deleteMessage').innerHTML = `Seguro de eliminar el registro`;
 
             let elem = document.getElementById('deleteModal');
-            let instance = M.Modal.init(elem, { dismissible: false });
+            let instance = M.Modal.init(elem, { dismissible: false }); //El dismissible: false  es para que el modal no se oculté al hacer click fuera del recuadro(Solo se cierra al dar click en cerrar)
             instance.open();
+        }
+
+        const Attach = (entity, id) => {
+            
+            // event.stopPropagation();
+            let uri = `Ocasiones/Attach/${id}`;
+            document.getElementById('attachTitle').innerHTML = id === "" ? `Agregar ${entity}` : `Editar ${entity}`;
+
+            $("#attachBody").load(uri, function () {
+                $("#attachModal").modal('open');
+                M.updateTextFields();
+            });
+        }
+
+        const ConfirmAttach = () => {
+
+            let formData = new FormData();
+            let myForm = document.getElementById("formAttach");
+            formData.append('ocasione', myForm);
+
+            let formValues = $("#formAttach").serialize();
+
+            const request = $.ajax({
+                url: "/Ocasiones/Attach",
+                method: "POST",
+                data: formValues
+                // dataType: "html"
+            });
+
+            request.done(function (data) {
+                console.table(data);
+
+                let row = document.getElementById(`row_${data.id}`);
+
+                if (row === undefined) {
+                    var newRow = `
+                                <tr id="row_${data.id}">
+                                    <td>
+                                        ${data.ocasion}
+                                    </td>
+                                    <td>
+                                        <i class="fa-solid fa-pen-to-square fa-xl" onclick="Attach('Ocasión', ${data.id});" onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'" style="color: black;"></i>
+                                        <i class="fa-solid fa-trash-can fa-xl" onclick="Delete('Ocasión','${data.ocasion}', ${data.id});" onmouseover="this.style.color='red'" onmouseout="this.style.color='black'" title="Eliminar"></i>
+                                    </td>
+                                </tr>
+                    `;
+                } else {
+                    let tdOcasion = row.getElementsByTagName("td")[0];
+                    tdOcasion.innerText = data.ocasion;
+                }
+
+
+                var bodyOcasion = document.getElementById("tblBody");
+                bodyOcasion.insertAdjacentHTML("beforeend", newRow);
+
+                let toastHTML = "<span><i class='fa-regular fa-circle-check'></i>&ensp;Registro Guardado</span>";
+                M.toast({ html: toastHTML, classes: 'rounded green' });
+
+                $("#attachModal").modal('close');
+            });
+
+            request.fail(function (jqXHR, textStatus) {
+                let toastHTML = "<span><i class='fa-regular fa-circle-check'></i>Ocurrió un Error!</span>";
+                M.toast({ html: toastHTML, classes: 'rounded red' });
+                console.error("Falló la solicitud de Eliminación: " + textStatus);
+                // alert("Request failed: " + textStatus);
+            });
+        }
+            const ConfirmDelete = () => {
+
+                const request = $.ajax({
+                    url: "/Ocasiones/Delete",
+                    method: "POST",
+                    data: { id: idDelete }
+                    // dataType: "html"
+                });
+
+                request.done(function (data) {
+                    console.table(data);
+                    let row = document.getElementById(`row_${data.id}`); //En Javascript hace diferencia entre mayúsculas y minúsculas
+                    row.remove();
+                    let toastHTML = "<span><i class='fa-regular fa-circle-check'></i>&ensp;Registro Eliminado</span>";
+                    M.toast({ html: toastHTML, classes: 'rounded red' });
+                });
+
+                request.fail(function (jqXHR, textStatus) {
+                    let toastHTML = "<span><i class='fa-regular fa-circle-check'></i>Ocurrió un Error!</span>";
+                    M.toast({ html: toastHTML, classes: 'rounded red' });
+                    console.error("Falló la solicitud de Eliminación: " + textStatus);
+                    // alert("Request failed: " + textStatus);
+                });
+
+            // request.always(function () {
+            //     alert("complete");
+            // });
         }
     
     </script>
