@@ -84,6 +84,11 @@
         })
 
         document.getElementById('cmdSave').addEventListener('click', () => {
+            $("#formAttach").validate();
+            if (!$("#formAttach").valid()) {
+                validateMaterialize(); //Function declarada en site.js sirve para que al hacer click en guardar valide si los campos están correctos
+                return;
+            }
             ConfirmAttach();
         })
 
@@ -106,6 +111,11 @@
             document.getElementById('attachTitle').innerHTML = id === "" ? `Agregar ${entity}` : `Editar ${entity}`;
 
             $("#attachBody").load(uri, function () {
+                //Validación del lado del servidor
+                $.validator.unobtrusive.parse("#formAttach");
+                
+                requiredMaterialize(); //Function declarada en el archivo site.js(Sirve para que al dejar de hacer focus en el input se muestre la validación)
+
                 $("#attachModal").modal('open');
                 M.updateTextFields();
             });
@@ -131,7 +141,7 @@
 
                 let row = document.getElementById(`row_${data.id}`);
 
-                if (row === undefined) {
+                if (row === null) {
                     var newRow = `
                                 <tr id="row_${data.id}">
                                     <td>

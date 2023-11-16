@@ -1,8 +1,5 @@
-﻿@model NeoCrudModal.Entidades.Ocasione
+﻿@model NeoCrudModal.Models.OcasionModel
 
-@{
-    ViewData["Title"] = "Edit";
-}
 @* 
 <h1>Edit</h1>
 
@@ -27,23 +24,19 @@
  *@
 <div class="row">
     <div class="divider"></div>
-    <form id="formAttach" class="col s12" asp-action="Edit">
+    <form id="formAttach" class="col s12">
         <input type="hidden" asp-for="Id" />
         <div class="row">
             <div class="input-field col s8">
+                @* <div asp-validation-summary="All" class="helper-text" style="color:red;"></div> *@
                 @* <i class="fa-solid fa-gift"></i> *@
                 <input asp-for="Ocasion" id="icon_prefix" type="text" class="validate" />
                 <label asp-for="Ocasion" for="icon_prefix"></label>
+                @* <span asp-validation-for="Ocasion" class="helper-text" style="color: red;"></span> Ojo si funciona, igual lo estoy haciendo como el tutorial *@
                 @* <input id="icon_prefix" type="text" class="validate">
                 <label for="icon_prefix">First Name</label> *@
-                <span class="helper-text" data-error="wrong" data-success="right">Helper text</span>
+                <span class="helper-text" data-error="wrong" data-success="right"></span>
             </div>
         </div>
     </form>
 </div>
-
-
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

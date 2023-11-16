@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NeoCrudModal.Context;
 using NeoCrudModal.Entidades;
+using NeoCrudModal.Models;
 
 namespace NeoCrudModal.Controllers
 {
@@ -70,16 +71,20 @@ namespace NeoCrudModal.Controllers
         // GET: Ocasiones/Edit/5
         public async Task<IActionResult> Attach(int? id)
         {
-            var entity = new Ocasione();
+            //Estoy cambiando, según la S de Solid. Debería crear una nueva clase (OcasionModel ubicada en carpeta models) dónde ahí le asigno la responsabilidad de validar la entrada de valores
+            //Por lo que el objeto del form que va a devolver es de tipo OcasionModel
+            var model = new OcasionModel();
             if (id is null)
             {
-                entity.Id = 0;
-                return PartialView("Attach", entity);
+                model.Id = 0;
+                return PartialView("Attach", model);
             }
-
             var ocasione = await _context.Ocasiones.FindAsync(id);
+            
+            model.Id = ocasione.Id;
+            model.Ocasion = ocasione.Ocasion;
 
-            return PartialView("Attach", ocasione);
+            return PartialView("Attach", model);
         }
 
         // POST: Ocasiones/Edit/5
@@ -87,25 +92,38 @@ namespace NeoCrudModal.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Attach([Bind("Id,Ocasion")] Ocasione ocasione)
+        public async Task<IActionResult> Attach([Bind("Id,Ocasion")] OcasionModel model)
         {
+            var entity = new Ocasione { Id = model.Id, Ocasion = model.Ocasion };
+            //Ojo no me salió, quise colocar un error en el modelo
+            //var ocasion2 = await _context.Ocasiones.FirstOrDefaultAsync(o => o.Ocasion == model.Ocasion);
+            //if (ocasion2 != null) ModelState.AddModelError("Ocasion", "No se puede repetir la Ocasión");
+
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (ocasione.Id > 0)
+                    if (entity.Id > 0)
                     {
-                        _context.Update(ocasione);
+                        //Colocamos el Id debido a que si tenemos varios campos y estamos actualizando otros campos validar que sea solo valores duplicado en Id diferente
+                        var ocasion = await _context.Ocasiones.FirstOrDefaultAsync(o => o.Ocasion == model.Ocasion && o.Id != model.Id);
+                        if (ocasion != null) return BadRequest("No debe tener la misma ocasión");
+
+                        _context.Update(entity);
                     }
                     else
                     {
-                        _context.Add(ocasione);
+                        var ocasion = await _context.Ocasiones.FirstOrDefaultAsync(o => o.Ocasion == model.Ocasion);
+                        if (ocasion != null) if (ocasion != null) return BadRequest("No debe tener la misma ocasión");
+
+                        _context.Add(entity);
                     }
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OcasioneExists(ocasione.Id))
+                    if (!OcasioneExists(entity.Id))
                     {
                         return NotFound();
                     }
@@ -116,7 +134,7 @@ namespace NeoCrudModal.Controllers
                 }
                 //return RedirectToAction(nameof(Index));
             }
-            return Json(ocasione);
+            return Json(entity);
         }
 
         // POST: Ocasiones/Delete/5
